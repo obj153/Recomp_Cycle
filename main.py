@@ -2,7 +2,6 @@ import numpy as np
 import CoolProp as CP
 
 def Turbine(Ti, Pi, Rp, fluid, eff):
-<<<<<<< HEAD
     Turb_in = CP.AbstractState("HEOS", fluid)
     PT = CP.CoolProp.generate_update_pair(CP.iP, Pi, CP.iT, Ti)
     Turb_in.update(PT[0],PT[1],PT[2])
@@ -39,23 +38,13 @@ def Cooler(Ti, To, P, fluid, Rs):
     Cp = CP.CoolProp.PropsSI('C', 'T', Ti, 'P', P, fluid)
     q_out = Rs * Cp * (Ti - To)
     return q_out
-=======
-    k = CP.PropsSI('C', 'P', Pi, 'T', Ti, fluid)
-    To = Ti / (Rp ** ((k - 1) / k))
-    return None
 
->>>>>>> master
 
 Tst = CP.AbstractState("HEOS", "Air")
 PT = CP.CoolProp.generate_update_pair(CP.iP, 101325, CP.iT, 300)
 print(PT)
 Tst.update(PT[0],PT[1],PT[2])
-<<<<<<< HEAD
 k = Tst.cpmass() / Tst.cvmass()
 print(k)
 
 print (Turbine(550 + 273.15, 25 * 10 ** 6, 9, "CO2", 0.8))
-=======
-k = Tst.cvmass()
-print(k)
->>>>>>> master
