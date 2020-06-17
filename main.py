@@ -54,35 +54,61 @@ def Cooler(Ti, To, P, fluid, Rs):
     return q_out
 
 def HTR(Th_i, Tl_i, eff, Ph, Pl, fluid):
-    Ch = CP.CoolProp.PropsSI('C', 'T', Th_i, 'P', Pl, fluid)
-    Cl = CP.CoolProp.PropsSI('C', 'T', Tl_i, 'P', Ph, fluid)
-    Th_o = Th_i - eff * (Th_i - Tl_i)
-    hh_i = CP.CoolProp.PropsSI('H', 'T', Th_i, 'P', Pl, fluid)
-    hh_o = CP.CoolProp.PropsSI('H', 'T', Th_o, 'P', Pl, fluid)
-    hl_i = CP.CoolProp.PropsSI('H', 'T', Tl_i, 'P', Ph, fluid)
-    hl_o = hh_i + hl_i - hh_o
-    Tl_o = CP.CoolProp.PropsSI('T', 'H', hl_o, 'P', Pl, fluid)
-    return (Th_o, Tl_o)
-
-def LTR(Th_i, Tl_i, eff, Ph, Pl, fluid, Rs):
-    Ch = CP.CoolProp.PropsSI('C', 'T', Th_i, 'P', Pl, fluid)
-    Cl = CP.CoolProp.PropsSI('C', 'T', Tl_i, 'P', Ph, fluid) * Rs
-    if Ch < Cl:
+    if Th_i < Tl_i:
+        Tl_o = Tl_i - eff * (Tl_i - Th_i)
+        hl_i = CP.CoolProp.PropsSI('H', 'T', Tl_i, 'P', Ph, fluid)
+        hl_o = CP.CoolProp.PropsSI('H', 'T', Tl_o, 'P', Ph, fluid)
+        hh_i = CP.CoolProp.PropsSI('H', 'T', Th_i, 'P', Pl, fluid)
+        hh_o = hl_i + hh_i - hl_o
+        Th_o = CP.CoolProp.PropsSI('T', 'H', hh_o, 'P', Ph, fluid)
+    else:
+        Ch = CP.CoolProp.PropsSI('C', 'T', Th_i, 'P', Pl, fluid)
+        Cl = CP.CoolProp.PropsSI('C', 'T', Tl_i, 'P', Ph, fluid)
         Th_o = Th_i - eff * (Th_i - Tl_i)
         hh_i = CP.CoolProp.PropsSI('H', 'T', Th_i, 'P', Pl, fluid)
         hh_o = CP.CoolProp.PropsSI('H', 'T', Th_o, 'P', Pl, fluid)
         hl_i = CP.CoolProp.PropsSI('H', 'T', Tl_i, 'P', Ph, fluid)
         hl_o = hh_i + hl_i - hh_o
         Tl_o = CP.CoolProp.PropsSI('T', 'H', hl_o, 'P', Pl, fluid)
-    else:
-        Tl_o = Tl_i + eff * (Th_i - Tl_i)
-        hh_i = CP.CoolProp.PropsSI('H', 'T', Th_i, 'P', Pl, fluid)
-        hl_o = CP.CoolProp.PropsSI('H', 'T', Tl_o, 'P', Pl, fluid)
-        hl_i = CP.CoolProp.PropsSI('H', 'T', Tl_i, 'P', Ph, fluid)
-        hh_o = hh_i + hl_i - hl_o
-        Th_o = CP.CoolProp.PropsSI('T', 'H', hh_o, 'P', Pl, fluid)
     return (Th_o, Tl_o)
 
+def LTR(Th_i, Tl_i, eff, Ph, Pl, fluid, Rs):
+    if Th_i < Tl_i:
+        Cl = CP.CoolProp.PropsSI('C', 'T', Th_i, 'P', Pl, fluid)
+        Ch = CP.CoolProp.PropsSI('C', 'T', Tl_i, 'P', Ph, fluid) * Rs
+        if Ch < Cl:
+            Tl_o = Tl_i - eff * (Tl_i - Th_i)
+            hl_i = CP.CoolProp.PropsSI('H', 'T', Tl_i, 'P', Ph, fluid)
+            hl_o = CP.CoolProp.PropsSI('H', 'T', Tl_o, 'P', Ph, fluid)
+            hh_i = CP.CoolProp.PropsSI('H', 'T', Th_i, 'P', Pl, fluid)
+            hh_o = hl_i + hh_i - hl_o
+            Th_o = CP.CoolProp.PropsSI('T', 'H', hh_o, 'P', Ph, fluid)
+        else:
+            Th_o = Th_i + eff * (Tl_i - Th_i)
+            hl_i = CP.CoolProp.PropsSI('H', 'T', Tl_i, 'P', Ph, fluid)
+            hh_o = CP.CoolProp.PropsSI('H', 'T', Th_o, 'P', Pl, fluid)
+            hh_i = CP.CoolProp.PropsSI('H', 'T', Th_i, 'P', Pl, fluid)
+            hl_o = hl_i + hh_i - hh_o
+            Tl_o = CP.CoolProp.PropsSI('T', 'H', hl_o, 'P', Ph, fluid)
+    else:
+        Ch = CP.CoolProp.PropsSI('C', 'T', Th_i, 'P', Pl, fluid)
+        Cl = CP.CoolProp.PropsSI('C', 'T', Tl_i, 'P', Ph, fluid) * Rs
+        if Ch < Cl:
+            Th_o = Th_i - eff * (Th_i - Tl_i)
+            hh_i = CP.CoolProp.PropsSI('H', 'T', Th_i, 'P', Pl, fluid)
+            hh_o = CP.CoolProp.PropsSI('H', 'T', Th_o, 'P', Pl, fluid)
+            hl_i = CP.CoolProp.PropsSI('H', 'T', Tl_i, 'P', Ph, fluid)
+            hl_o = hh_i + hl_i - hh_o
+            Tl_o = CP.CoolProp.PropsSI('T', 'H', hl_o, 'P', Ph, fluid)
+        else:
+            Tl_o = Tl_i + eff * (Th_i - Tl_i)
+            hh_i = CP.CoolProp.PropsSI('H', 'T', Th_i, 'P', Pl, fluid)
+            hl_o = CP.CoolProp.PropsSI('H', 'T', Tl_o, 'P', Ph, fluid)
+            hl_i = CP.CoolProp.PropsSI('H', 'T', Tl_i, 'P', Ph, fluid)
+            hh_o = hh_i + hl_i - hl_o
+            Th_o = CP.CoolProp.PropsSI('T', 'H', hh_o, 'P', Pl, fluid)
+    return (Th_o, Tl_o)
+ 
 def Mixing(T1, T2, P, Rs, fluid):
     H1 = CP.CoolProp.PropsSI('U', 'T', T1, 'P', P, fluid) * Rs
     H2 = CP.CoolProp.PropsSI('U', 'T', T2, 'P', P, fluid) * (1 - Rs)
@@ -110,7 +136,7 @@ for Rp in np.arange(1, 10.1, 0.5):
         T6 = Turbine_outlet[2]
         MC_outlet = Compressor(T1, P_Low, Rp, fluid, Compressor_eff)
         T2 = MC_outlet[2]
-        T7 = T2
+        T7 = T6
         T7_old = 0
         while True:
             LTR_outlet = LTR(T7, T2, Heat_exchanger_eff, P_High, P_Low, fluid, Rs)
@@ -139,7 +165,7 @@ for Rp in np.arange(1, 10.1, 0.5):
         w_out = - (w_t - w_mc - w_rc)
         Total_eff = w_out / q_in * 100
         Ans_list.append([Rp, 1 - Rs, Total_eff])
-        print([Rp,Rs, q_in, w_out, Total_eff])
+        print([Rp, Rs, q_in, w_out, Total_eff])
 
 for i in Ans_list:
     print (i)
